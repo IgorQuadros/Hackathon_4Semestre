@@ -1,120 +1,172 @@
-import { ReactNode, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { IToken } from '../../interfaces/token'
-import { validaPermissao } from '../../services/token'
-
-//Exemplo enterder undefined ou null
-let Pessoa = {
-    nome: "Junior",
-    email: null,
-    // idade: undefined
-}
+import { ReactNode, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { IToken } from '../../interfaces/token';
+import { validaPermissao } from '../../services/token';
 
 interface IProps {
-    children: ReactNode
+    children: ReactNode;
 }
 
 export const LayoutDashboard = (props: IProps) => {
-
-    const [token, setToken] = useState<IToken>()
+    const [token, setToken] = useState<IToken | undefined>();
 
     useEffect(() => {
-        let lsToken =
-            localStorage.getItem('americanos.token')
-
-        let token: IToken | undefined
+        let lsToken = localStorage.getItem('americanos.token');
+        let token: IToken | undefined;
 
         if (typeof lsToken === 'string') {
-            token = JSON.parse(lsToken)
-            setToken(token)
+            token = JSON.parse(lsToken);
+            setToken(token);
         }
-    }, [])
+    }, []);
 
     return (
         <>
-
-            <header
-                className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0"
-            >
-                <a className="navbar-brand col-md-3 col-lg-2 me-0 px-3"
-                    href="#">
-                    Sistema Autenticação
+            {/* Header com menu */}
+            <header className="header">
+                <a className="navbar-brand" href="#">
+                    Hackathon
                 </a>
-                <button
-                    className="navbar-toggler position-absolute d-md-none collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#sidebarMenu"
-                    aria-controls="sidebarMenu"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                >
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-
-                <div className="w-100"></div>
-                <div className="navbar-nav">
-                    <div className="nav-item text-nowrap">
-                        <Link
-                            className="nav-link px-3"
-                            to="/">
-                            Sair
-                        </Link>
-                    </div>
-                </div>
+                <nav className="nav-menu">
+                    <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                    {validaPermissao(['admin', 'secretarios'], token?.user.permissoes) && (
+                        <Link className="nav-link" to="/usuarios">Usuários</Link>
+                    )}
+                    <Link className="nav-link" to="/ambientes">Ambientes</Link>
+                    <Link className="nav-link" to="/historico">Histórico</Link>
+                    <Link className="nav-link" to="/perfil">Perfil</Link>
+                    <Link className="nav-link logout" to="/">Sair</Link>
+                </nav>
             </header>
 
-            <div className="container-fluid">
-                <div className="row">
-                    <nav
-                        id="sidebarMenu"
-                        className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
-                    >
-                        <div className="position-sticky pt-3">
-                            <ul className="nav flex-column">
-                                <li className="nav-item">
-                                    <Link
-                                        className={`nav-link`}
-                                        to={'/dashboard'}
-                                    >
-                                        Dashboard
-                                    </Link>
-                                </li>
-                                {
-                                    validaPermissao(
-                                        ['admin', 'secretarios'],
-                                        token?.user.permissoes
-                                    ) &&
-                                    <li className="nav-item">
-                                        <Link
-                                            className={`nav-link`}
-                                            to={'/usuarios'}
-                                        >
-                                            Usuários
-                                        </Link>
-                                    </li>
-                                }
-                                <li className="nav-item">
-                                    <Link
-                                        className={`nav-link`}
-                                        to={'/voluntarios'}
-                                    >
-                                        Voluntários
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-                    </nav>
+            {/* Conteúdo principal */}
+            <main className="main-content">
+                {props.children}
+            </main>
 
+            {/* Footer */}
+            <footer className="footer">
+                Desenvolvido por alunos da UniAlfa!
+            </footer>
 
-                    <main
-                        className="col-md-9 ms-sm-auto col-lg-10 px-md-4"
-                    >
-                        {props.children}
-                    </main>
+            {/* Estilos CSS */}
+            <style>{`
+                * {
+                    box-sizing: border-box;
+                    margin: 0;
+                    padding: 0;
+                }
 
-                </div>
-            </div>
+                body {
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                }
+
+                .header {
+                    background: linear-gradient(135deg, #184c32, #194d33);
+                    padding: 15px 20px;
+                    color: white;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                    position: sticky;
+                    top: 0;
+                    z-index: 1000;
+                }
+
+                .navbar-brand {
+                    font-size: 1.5em;
+                    font-weight: bold;
+                    color: #f9f9fc;
+                    text-decoration: none;
+                }
+
+                .nav-menu {
+                    display: flex;
+                    gap: 20px;
+                }
+
+                .nav-link {
+                    color: #f9f9fc;
+                    text-decoration: none;
+                    font-size: 1em;
+                    transition: color 0.3s ease;
+                    position: relative;
+                }
+
+                .nav-link::after {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    bottom: -5px;
+                    width: 100%;
+                    height: 2px;
+                    background-color: transparent;
+                    transition: background-color 0.3s ease;
+                }
+
+                .nav-link:hover {
+                    color: #9bcf68;
+                }
+
+                .nav-link:hover::after {
+                    background-color: #9bcf68;
+                }
+
+                .logout {
+                    background-color: #0072bb;
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                    color: white;
+                    transition: background-color 0.3s ease;
+                }
+
+                .logout:hover {
+                    background-color: #ff006e;
+                    color: white;
+                }
+
+                .main-content {
+                    background-color: #f1f3f5;
+                    padding: 30px;
+                    min-height: calc(100vh - 160px);
+                    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.05);
+                    border-radius: 8px;
+                    margin: 20px auto;
+                    max-width: 1200px;
+                }
+
+                .footer {
+                    background-color: #184c32;
+                    color: #f9f9fc;
+                    padding: 15px;
+                    text-align: center;
+                    font-size: 0.9em;
+                    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+                    position: sticky;
+                    bottom: 0;
+                }
+
+                /* Media queries para responsividade */
+                @media (max-width: 768px) {
+                    .header {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+
+                    .nav-menu {
+                        flex-direction: column;
+                        width: 100%;
+                        gap: 10px;
+                    }
+
+                    .main-content {
+                        padding: 20px;
+                    }
+                }
+            `}</style>
         </>
-    )
-}
+    );    
+};
