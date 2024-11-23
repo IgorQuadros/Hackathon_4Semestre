@@ -63,7 +63,7 @@ export default function Dashboard() {
             <Loading visible={loading} />
             <LayoutDashboard>
                 <div className="d-flex justify-content-between mt-3">
-                    <h1 className="h2">Agendamentos</h1>
+                    <h1 className="h2">Dashboard/Agendamentos</h1>
                     <button
                         type="button"
                         className="btn btn-success"
@@ -80,8 +80,8 @@ export default function Dashboard() {
                             <th scope="col">#</th>
                             <th scope="col">Usuário</th>
                             <th scope="col">Ambiente</th>
-                            <th scope="col">Início</th>
-                            <th scope="col">Fim</th>
+                            <th scope="col">Data/Hora Início</th>
+                            <th scope="col">Data/Hora Fim</th>
                             <th scope="col">status</th>
                             <th scope="col">Ações</th>
                         </tr>
