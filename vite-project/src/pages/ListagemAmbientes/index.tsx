@@ -6,11 +6,11 @@ import { validaPermissao, verificaTokenExpirado } from "../../services/token";
 import { Loading } from "../../components/Loading";
 import axios from "axios";
 
-// Atualizando a interface IAmbientes
+// Interface dos Ambientes
 interface IAmbientes {
     id: number;
     nome: string;
-    tipo: string; // Novo campo adicionado para Tipo
+    tipo: string;
     status: string;
     hora_funcionamento: string;
 }
@@ -21,9 +21,6 @@ export default function Ambientes() {
     const [loading, setLoading] = useState(false);
     const [dadosAmbientes, setDadosAmbientes] = useState<Array<IAmbientes>>([]);
 
-    const [ambienteToDelete, setAmbienteToDelete] = useState<number | null>(null);
-
-    // Inicio, Update State, Destruir
     useEffect(() => {
         let lsStorage = localStorage.getItem('americanos.token');
 
@@ -41,8 +38,6 @@ export default function Ambientes() {
             navigate('/dashboard');
         }
 
-        console.log("Pode desfrutar do sistema :D");
-
         setLoading(true);
         axios.get('http://localhost:3001/ambientes')
             .then((res) => {
@@ -56,11 +51,16 @@ export default function Ambientes() {
     }, []);
 
     const handleEditClick = (id: number) => {
-        navigate(`/ambientes/${id}?action=edit`); // Inclui a query string para sinalizar que a ação é editar
+        navigate(`/ambientes/${id}?action=edit`);
     };
 
     const handleDeleteClick = (id: number) => {
-        navigate(`/ambientes/${id}?action=delete`); // Passa a query string para indicar que a ação é exclusão
+        navigate(`/ambientes/${id}?action=delete`);
+    };
+
+    // Nova função para o redirecionamento ao agendar
+    const handleAgendarClick = (id: number) => {
+        navigate(`/ambientes/${id}/agendar`);
     };
 
     return (
@@ -68,7 +68,7 @@ export default function Ambientes() {
             <Loading visible={loading} />
             <LayoutDashboard>
                 <div className="d-flex justify-content-between mt-3">
-                    <h1 className="h2">Ambientes</h1>
+                    <h1 className="h2">Ambientes Disponíveis Para Reserva</h1>
 
                     <button
                         type="button"
@@ -102,20 +102,12 @@ export default function Ambientes() {
                                     <td>{ambiente.hora_funcionamento}</td>
                                     <td>
                                         <button
-                                            className="btn btn-warning"
+                                            className="btn btn-primary"
                                             type="button"
                                             style={{ marginRight: 5 }}
-                                            onClick={() => handleEditClick(ambiente.id)}
+                                            onClick={() => handleAgendarClick(ambiente.id)}
                                         >
-                                            Editar
-                                        </button>
-                                        <button
-                                            className="btn btn-danger"
-                                            type="button"
-                                            style={{ marginRight: 5 }}
-                                            onClick={() => handleDeleteClick(ambiente.id)}
-                                        >
-                                            Excluir
+                                            Agendar
                                         </button>
                                     </td>
                                 </tr>

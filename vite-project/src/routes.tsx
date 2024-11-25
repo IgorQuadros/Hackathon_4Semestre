@@ -11,12 +11,24 @@ import HistoricoAgendamentos from './pages/HistoricoAgendamentos';
 import EnviarMensagem from './pages/EnvioDeMensagem';
 import Registro from './pages/Registro';
 import Notificacoes from './pages/Notificações';
+import RecuperacaoSenha from './pages/RecuperaçãoDeSenha';
+import ListarAmbientes from './pages/ListagemAmbientes';
+import AgendarAmbiente from './pages/ListagemAmbientes/Gerenciar';
+import GerenciarUsuarios from './pages/Usuarios/Gerenciar';
+import GerenciarDashboard from './pages/Dashboard/Gerenciar';
+import GerenciarAmbientes from './pages/Ambientes/Gerenciar';
 
 
 export const Rotas = () => {
     return (
         <BrowserRouter>
             <Routes>
+                {/*Rota principal*/}
+                <Route 
+                    path='/'
+                    element={<GerenciarDashboard />}
+                />
+
                 {/* Rota para página de Login */}
                 <Route 
                     path='/login'
@@ -27,6 +39,18 @@ export const Rotas = () => {
                 <Route 
                     path='/registro'
                     element={<Registro />}
+                />
+
+                {/* Rota para página de Listagem de Ambientes */}
+                <Route 
+                    path='/listarAmbientes'
+                    element={<ListarAmbientes />}
+                />
+
+                {/* Rota para Recuperação de Senha */}
+                <Route 
+                    path='/recuperacao-senha'
+                    element={<RecuperacaoSenha />}
                 />
 
                 {/* Rota para página de Dashboard */}
@@ -63,12 +87,6 @@ export const Rotas = () => {
                 <Route 
                     path='/notificacoes'
                     element={<Notificacoes />}
-                />
-
-                {/* Rota padrão que redireciona para o Registro */}
-                <Route 
-                    path='/'
-                    element={<Registro />}
                 />
             </Routes>
         </BrowserRouter>
