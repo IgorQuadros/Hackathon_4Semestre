@@ -15,7 +15,7 @@ interface IAmbientes {
     hora_funcionamento: string;
 }
 
-export default function Ambientes() {
+export default function ListarAmbientes() {
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
@@ -39,7 +39,7 @@ export default function Ambientes() {
         }
 
         setLoading(true);
-        axios.get('http://localhost:3001/ambientes')
+        axios.get('http://localhost:8000/api/ambientes') // Altere para a rota correta da API em Laravel
             .then((res) => {
                 setDadosAmbientes(res.data);
                 setLoading(false);
@@ -50,36 +50,23 @@ export default function Ambientes() {
             });
     }, []);
 
-    const handleEditClick = (id: number) => {
-        navigate(`/ambientes/${id}?action=edit`);
-    };
-
-    const handleDeleteClick = (id: number) => {
-        navigate(`/ambientes/${id}?action=delete`);
-    };
-
-    // Nova função para o redirecionamento ao agendar
     const handleAgendarClick = (id: number) => {
         navigate(`/ambientes/${id}/agendar`);
+    };
+
+    const handleEditClick = (id: number) => {
+        navigate(`/ambientes/${id}/editar`);
+    };
+
+    const handleCancelClick = (id: number) => {
+        navigate(`/ambientes/${id}/cancelar`);
     };
 
     return (
         <>
             <Loading visible={loading} />
             <LayoutDashboard>
-                <div className="d-flex justify-content-between mt-3">
-                    <h1 className="h2">Ambientes Disponíveis Para Reserva</h1>
-
-                    <button
-                        type="button"
-                        className="btn btn-success"
-                        onClick={() => {
-                            navigate('/ambientes/criar');
-                        }}
-                    >
-                        Adicionar
-                    </button>
-                </div>
+                <h1 className="h2 mt-3">Ambientes Disponíveis Para Reserva</h1>
                 <table className="table table-striped">
                     <thead>
                         <tr>
@@ -103,11 +90,23 @@ export default function Ambientes() {
                                     <td>
                                         <button
                                             className="btn btn-primary"
-                                            type="button"
                                             style={{ marginRight: 5 }}
                                             onClick={() => handleAgendarClick(ambiente.id)}
                                         >
                                             Agendar
+                                        </button>
+                                        <button
+                                            className="btn btn-warning"
+                                            style={{ marginRight: 5 }}
+                                            onClick={() => handleEditClick(ambiente.id)}
+                                        >
+                                            Editar
+                                        </button>
+                                        <button
+                                            className="btn btn-danger"
+                                            onClick={() => handleCancelClick(ambiente.id)}
+                                        >
+                                            Cancelar
                                         </button>
                                     </td>
                                 </tr>

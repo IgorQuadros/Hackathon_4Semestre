@@ -15,6 +15,16 @@ interface IForm {
   status: string;
 }
 
+interface IUsuario {
+  id: number;
+  nome: string;
+}
+
+interface IAmbiente {
+  id: number;
+  nome: string;
+}
+
 export default function GerenciarAgendamentos() {
   const {
     register,
@@ -32,6 +42,10 @@ export default function GerenciarAgendamentos() {
   const [isDelete, setIsDelete] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const action = searchParams.get('action');
+
+  // Estado para armazenar usuários e ambientes
+  const [usuarios, setUsuarios] = useState<IUsuario[]>([]);
+  const [ambientes, setAmbientes] = useState<IAmbiente[]>([]);
 
   // Configurações iniciais e busca de agendamento para edição
   useEffect(() => {
@@ -63,6 +77,22 @@ export default function GerenciarAgendamentos() {
     if (action === "delete") {
       setIsDelete(true);
     }
+
+    // Carregar dados de usuários e ambientes
+    const carregarDados = async () => {
+      try {
+        const [resUsuarios, resAmbientes] = await Promise.all([
+          axios.get("http://localhost:3001/usuarios"),
+          axios.get("http://localhost:3001/ambientes"),
+        ]);
+        setUsuarios(resUsuarios.data);
+        setAmbientes(resAmbientes.data);
+      } catch (error) {
+        console.error("Erro ao carregar dados de usuários ou ambientes:", error);
+      }
+    };
+
+    carregarDados();
   }, [id]);
 
   // Função para enviar o formulário
@@ -121,28 +151,40 @@ export default function GerenciarAgendamentos() {
           ref={refForm}
         >
           <div className="col-md-12">
-            <label htmlFor="id_usuario" className="form-label">ID do Usuário</label>
-            <input
-              type="number"
-              className="form-control"
+            <label htmlFor="id_usuario" className="form-label">Usuário</label>
+            <select
+              className="form-select"
               id="id_usuario"
               required
-              {...register('id_usuario', { required: 'ID do usuário é obrigatório!' })}
-            />
+              {...register('id_usuario', { required: 'Selecione um usuário' })}
+            >
+              <option value="">Selecione um usuário</option>
+              {usuarios.map((usuario) => (
+                <option key={usuario.id} value={usuario.id}>
+                  {`${usuario.nome} (ID: ${usuario.id})`}
+                </option>
+              ))}
+            </select>
             <div className="invalid-feedback">
               {errors.id_usuario && errors.id_usuario.message}
             </div>
           </div>
 
           <div className="col-md-12">
-            <label htmlFor="id_ambiente" className="form-label">ID do Ambiente</label>
-            <input
-              type="number"
-              className="form-control"
+            <label htmlFor="id_ambiente" className="form-label">Ambiente</label>
+            <select
+              className="form-select"
               id="id_ambiente"
               required
-              {...register('id_ambiente', { required: 'ID do ambiente é obrigatório!' })}
-            />
+              {...register('id_ambiente', { required: 'Selecione um ambiente' })}
+            >
+              <option value="">Selecione um ambiente</option>
+              {ambientes.map((ambiente) => (
+                <option key={ambiente.id} value={ambiente.id}>
+                  {`${ambiente.nome} (ID: ${ambiente.id})`}
+                </option>
+              ))}
+            </select>
             <div className="invalid-feedback">
               {errors.id_ambiente && errors.id_ambiente.message}
             </div>

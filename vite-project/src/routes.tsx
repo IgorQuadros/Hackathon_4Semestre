@@ -13,10 +13,13 @@ import Registro from './pages/Registro';
 import Notificacoes from './pages/Notificações';
 import RecuperacaoSenha from './pages/RecuperaçãoDeSenha';
 import ListarAmbientes from './pages/ListagemAmbientes';
-import AgendarAmbiente from './pages/ListagemAmbientes/Gerenciar';
+import GerenciarListarAmbiente from './pages/ListagemAmbientes/Gerenciar';
 import GerenciarUsuarios from './pages/Usuarios/Gerenciar';
 import GerenciarDashboard from './pages/Dashboard/Gerenciar';
 import GerenciarAmbientes from './pages/Ambientes/Gerenciar';
+import MeusAgendamentos from './pages/MeusAgendamentos';
+import UserProfile from './pages/Perfil';
+import EditUserProfile from './pages/Perfil/Gerenciar';
 
 
 export const Rotas = () => {
@@ -26,7 +29,7 @@ export const Rotas = () => {
                 {/*Rota principal*/}
                 <Route 
                     path='/'
-                    element={<GerenciarDashboard />}
+                    element={<Dashboard />}
                 />
 
                 {/* Rota para página de Login */}
@@ -41,10 +44,22 @@ export const Rotas = () => {
                     element={<Registro />}
                 />
 
+                {/* Rota para Perfil de Usuário */}
+                <Route 
+                    path='/profile'
+                    element={<UserProfile />}
+                /> 
+
                 {/* Rota para página de Listagem de Ambientes */}
                 <Route 
                     path='/listarAmbientes'
                     element={<ListarAmbientes />}
+                />
+
+                {/*Rota para Meus Agendamentos*/}
+                <Route 
+                    path='/meusAgendamentos'
+                    element={<MeusAgendamentos />}
                 />
 
                 {/* Rota para Recuperação de Senha */}

@@ -12,18 +12,42 @@ interface IHorario {
     disponivel: boolean;
 }
 
-export default function AgendarAmbiente() {
+// Interface para os dados do ambiente
+interface IAmbiente {
+    id: number;
+    nome: string;
+    tipo: string;
+    status: string;
+    hora_funcionamento: string;
+}
+
+export default function GerenciarListarAmbiente() {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
 
     const [loading, setLoading] = useState(false);
     const [horarios, setHorarios] = useState<Array<IHorario>>([]);
     const [selectedHorario, setSelectedHorario] = useState<number | null>(null);
+    const [ambiente, setAmbiente] = useState<IAmbiente | null>(null);
+
+    useEffect(() => {
+        setLoading(true);
+        // Obtém os dados do ambiente específico
+        axios.get(`http://localhost:8000/api/ambientes/${id}`) // Ajuste a URL para o endpoint correto do Laravel
+            .then((res) => {
+                setAmbiente(res.data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                setLoading(false);
+                console.log(err);
+            });
+    }, [id]);
 
     useEffect(() => {
         setLoading(true);
         // Obtém os horários disponíveis do ambiente
-        axios.get(`http://localhost:3001/ambientes/${id}/horarios`)
+        axios.get(`http://localhost:8000/api/ambientes/${id}/horarios`) // Ajuste a URL para o endpoint correto do Laravel
             .then((res) => {
                 setHorarios(res.data);
                 setLoading(false);
@@ -37,7 +61,7 @@ export default function AgendarAmbiente() {
     const handleAgendarClick = () => {
         if (selectedHorario !== null) {
             setLoading(true);
-            axios.post(`http://localhost:3001/ambientes/${id}/agendar`, {
+            axios.post(`http://localhost:8000/api/ambientes/${id}/agendar`, {
                 horarioId: selectedHorario
             })
             .then(() => {
@@ -52,12 +76,29 @@ export default function AgendarAmbiente() {
         }
     };
 
+    const handleEditClick = () => {
+        // Implemente a lógica para editar agendamento aqui
+    };
+
+    const handleCancelClick = () => {
+        // Implemente a lógica para cancelar agendamento aqui
+    };
+
     return (
         <>
             <Loading visible={loading} />
             <LayoutDashboard>
                 <div className="mt-3">
-                    <h1 className="h2">Agendar Ambiente</h1>
+                    <h1 className="h2">Gerenciar Ambiente</h1>
+                    {ambiente && (
+                        <div className="mb-3">
+                            <p><strong>ID do Ambiente:</strong> {ambiente.id}</p>
+                            <p><strong>Nome:</strong> {ambiente.nome}</p>
+                            <p><strong>Tipo:</strong> {ambiente.tipo}</p>
+                            <p><strong>Status:</strong> {ambiente.status}</p>
+                            <p><strong>Funcionamento:</strong> {ambiente.hora_funcionamento}</p>
+                        </div>
+                    )}
                     <div className="list-group">
                         {horarios.map((horario) => (
                             <button

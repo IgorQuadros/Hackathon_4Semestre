@@ -12,14 +12,16 @@ interface IAgendamentos {
     hora: string;
     cliente: string;
     servico: string;
+    ambiente: string; // Novo campo para o nome do ambiente
 }
 
 export default function Dashboard() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [dadosAgendamentos, setDadosAgendamentos] = useState<Array<IAgendamentos>>([]);
+    const [ambientes, setAmbientes] = useState<string[]>([]); // Lista de ambientes
+    const [filtroAmbiente, setFiltroAmbiente] = useState<string>(""); // Ambiente selecionado
 
-    // Inicio, Update State, Destruir
     useEffect(() => {
         let lsStorage = localStorage.getItem('americanos.token');
         let token: IToken | null = null;
@@ -39,6 +41,7 @@ export default function Dashboard() {
         console.log("Pode desfrutar do sistema :D");
 
         setLoading(true);
+        // Carregar agendamentos
         axios.get('http://localhost:3001/agendamentos')
             .then((res) => {
                 setDadosAgendamentos(res.data);
@@ -48,15 +51,34 @@ export default function Dashboard() {
                 setLoading(false);
                 console.log(err);
             });
+
+        // Carregar lista de ambientes
+        axios.get('http://localhost:3001/ambientes')
+            .then((res) => {
+                setAmbientes(res.data); // Carrega a lista de ambientes
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }, []);
 
+    // Função para manipular a mudança no filtro de ambiente
+    const handleFiltroChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setFiltroAmbiente(event.target.value);
+    };
+
+    // Filtrar agendamentos pelo ambiente selecionado
+    const agendamentosFiltrados = filtroAmbiente
+        ? dadosAgendamentos.filter(agendamento => agendamento.ambiente === filtroAmbiente)
+        : dadosAgendamentos;
+
     const handleEditClick = (id: number) => {
-        navigate(`/agendamentos/${id}?action=edit`); // Inclui a query string para sinalizar que a ação é editar
-    }
+        navigate(`/agendamentos/${id}?action=edit`);
+    };
 
     const handleDeleteClick = (id: number) => {
-        navigate(`/agendamentos/${id}?action=delete`); // Passa a query string para indicar que a ação é exclusão
-    }
+        navigate(`/agendamentos/${id}?action=delete`);
+    };
 
     return (
         <>
@@ -74,7 +96,23 @@ export default function Dashboard() {
                         Adicionar
                     </button>
                 </div>
-                <table className="table table-striped">
+                <div className="mt-3">
+                    {/* Filtro de Ambiente */}
+                    <label htmlFor="filtroAmbiente">Filtrar por Ambiente: </label>
+                    <select
+                        id="filtroAmbiente"
+                        value={filtroAmbiente}
+                        onChange={handleFiltroChange}
+                        className="form-select"
+                        style={{ maxWidth: '300px', display: 'inline-block', marginLeft: '10px' }}
+                    >
+                        <option value="">Todos</option>
+                        {ambientes.map((ambiente, index) => (
+                            <option key={index} value={ambiente}>{ambiente}</option>
+                        ))}
+                    </select>
+                </div>
+                <table className="table table-striped mt-3">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -82,32 +120,33 @@ export default function Dashboard() {
                             <th scope="col">Ambiente</th>
                             <th scope="col">Data/Hora Início</th>
                             <th scope="col">Data/Hora Fim</th>
-                            <th scope="col">status</th>
+                            <th scope="col">Status</th>
                             <th scope="col">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {dadosAgendamentos.map((agendamento, index) => (
+                        {agendamentosFiltrados.map((agendamento, index) => (
                             <tr key={index}>
                                 <th scope="row">{agendamento.id}</th>
                                 <td>{agendamento.data}</td>
                                 <td>{agendamento.hora}</td>
                                 <td>{agendamento.cliente}</td>
                                 <td>{agendamento.servico}</td>
+                                <td>{agendamento.ambiente}</td>
                                 <td>
                                     <button
                                         className="btn btn-warning"
-                                        type="submit"
+                                        type="button"
                                         style={{ marginRight: 5 }}
-                                        onClick={() => handleEditClick(agendamento.id)} // Agora chama a função para editar
+                                        onClick={() => handleEditClick(agendamento.id)}
                                     >
                                         Editar
                                     </button>
                                     <button
                                         className="btn btn-danger"
-                                        type="submit"
+                                        type="button"
                                         style={{ marginRight: 5 }}
-                                        onClick={() => handleDeleteClick(agendamento.id)} // Define o ID e navega para o filho
+                                        onClick={() => handleDeleteClick(agendamento.id)}
                                     >
                                         Excluir
                                     </button>
